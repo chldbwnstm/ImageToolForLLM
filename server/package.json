@@ -1,0 +1,31 @@
+{
+  "name": "@imagetoolforllm/server",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "MCP server for ImageToolForLLM: native screen/window capture + local annotation handoff.",
+  "license": "Apache-2.0",
+  "main": "dist/index.js",
+  "bin": {
+    "imagetoolforllm-server": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/index.ts",
+    "start": "node dist/index.js",
+    "poc": "tsx src/poc/capture-poc.ts",
+    "smoke": "tsx src/poc/mcp-smoke.ts",
+    "smoke:annotate": "tsx src/poc/annotate-smoke.ts",
+    "try": "tsx src/poc/try-annotate.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "node-screenshots": "^0.2.8",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^26.0.0",
+    "tsx": "^4.22.4",
+    "typescript": "^6.0.3"
+  }
+}

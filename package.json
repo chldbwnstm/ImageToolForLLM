@@ -1,0 +1,15 @@
+{
+  "name": "imagetoolforllm",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Capture a screenshot, draw labeled regions on it, and hand image + structured references to Claude Code.",
+  "license": "Apache-2.0",
+  "workspaces": [
+    "server"
+  ],
+  "scripts": {
+    "build": "npm run build --workspace server",
+    "dev": "npm run dev --workspace server",
+    "poc": "npm run poc --workspace server"
+  }
+}

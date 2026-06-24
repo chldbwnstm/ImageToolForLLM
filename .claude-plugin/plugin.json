@@ -1,0 +1,24 @@
+{
+  "name": "imagetoolforllm",
+  "displayName": "ImageToolForLLM",
+  "version": "0.1.0",
+  "description": "Capture a screenshot, draw labeled regions on it, and hand the image + structured references to your LLM coding agent.",
+  "author": {
+    "name": "ImageToolForLLM contributors"
+  },
+  "license": "Apache-2.0",
+  "keywords": [
+    "screenshot",
+    "annotation",
+    "image-annotation",
+    "mcp",
+    "llm",
+    "developer-tools"
+  ],
+  "mcpServers": {
+    "imagetoolforllm": {
+      "command": "node",
+      "args": ["${CLAUDE_PLUGIN_ROOT}/server/dist/index.js"]
+    }
+  }
+}

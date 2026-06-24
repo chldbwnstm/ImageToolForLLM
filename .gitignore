@@ -1,0 +1,23 @@
+# dependencies
+node_modules/
+
+# build output
+dist/
+*.tsbuildinfo
+
+# captured / annotated output (do not commit user screenshots)
+shots/
+*.annotated.png
+*.regions.json
+
+# logs / env / os
+*.log
+npm-debug.log*
+.env
+.env.local
+.DS_Store
+Thumbs.db
+
+# temp
+.tmp/
+scratchpad/

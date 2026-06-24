@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ImageToolForLLM — Annotator</title>
+  <link rel="stylesheet" href="/annotator.css" />
+</head>
+<body>
+  <header>
+    <span class="title">ImageToolForLLM</span>
+    <span class="hint">Drag to draw a region · Ctrl+wheel to zoom · scroll to pan · click a region to edit</span>
+    <span class="spacer"></span>
+    <div class="zoom">
+      <button id="zoomOut" class="btn ghost" title="Zoom out (Ctrl+-)">&minus;</button>
+      <button id="zoomLevel" class="btn ghost" title="Reset to 100% (Ctrl+0)">100%</button>
+      <button id="zoomIn" class="btn ghost" title="Zoom in (Ctrl+=)">+</button>
+      <button id="zoomFit" class="btn ghost" title="Fit to window">Fit</button>
+    </div>
+    <span class="spacer"></span>
+    <button id="cancelBtn" class="btn ghost">Cancel</button>
+    <button id="sendBtn" class="btn primary">Send to LLM</button>
+  </header>
+
+  <main>
+    <div id="canvasWrap">
+      <canvas id="canvas"></canvas>
+    </div>
+    <aside id="sidebar">
+      <h2>Regions</h2>
+      <ol id="regionList"></ol>
+      <p id="empty" class="muted">No regions yet — drag a box on the image.</p>
+    </aside>
+  </main>
+
+  <div id="editor" class="hidden">
+    <div class="card">
+      <h3>Region <span id="editId"></span></h3>
+      <label>Label<input id="editLabel" type="text" placeholder="e.g. Menu button" /></label>
+      <label>Note<textarea id="editNote" rows="3" placeholder="optional"></textarea></label>
+      <div class="row">
+        <button id="editDelete" class="btn ghost danger">Delete</button>
+        <span class="spacer"></span>
+        <button id="editCancel" class="btn ghost">Cancel</button>
+        <button id="editSave" class="btn primary">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" class="hidden"></div>
+  <script src="/annotator.js"></script>
+</body>
+</html>
