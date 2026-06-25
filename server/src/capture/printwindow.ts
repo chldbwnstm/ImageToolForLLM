@@ -3,9 +3,9 @@ import { existsSync } from "node:fs";
 import { readFile, unlink } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { SCRIPTS_DIR } from "../paths.js";
 
-const SCRIPT = fileURLToPath(new URL("../../scripts/capture-window.ps1", import.meta.url));
+const SCRIPT = path.join(SCRIPTS_DIR, "capture-window.ps1");
 const PS32 = "C:\\Windows\\SysWOW64\\WindowsPowerShell\\v1.0\\powershell.exe";
 
 /**

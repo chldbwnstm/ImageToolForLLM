@@ -1,14 +1,10 @@
 import http from "node:http";
 import type { IncomingMessage, ServerResponse } from "node:http";
 import { readFile } from "node:fs/promises";
-import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { saveFromPayload } from "../export/saveResult.js";
+import { WEBUI_DIR } from "../paths.js";
 
-// webui/ lives at the repo root; this file is at server/{src,dist}/annotate/ — both
-// are exactly three levels below the repo root, so the relative path is identical
-// for `tsx` (src) and the compiled build (dist).
-const WEBUI_DIR = fileURLToPath(new URL("../../../webui", import.meta.url));
 
 export interface Region {
   id: number;

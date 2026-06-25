@@ -1,7 +1,7 @@
 import http from "node:http";
 import type { IncomingMessage, ServerResponse } from "node:http";
 import { readFile } from "node:fs/promises";
-import { fileURLToPath } from "node:url";
+import { WEBUI_DIR } from "../paths.js";
 import path from "node:path";
 import { openBrowser } from "./openBrowser.js";
 import { captureMonitorLayers } from "../capture/screen.js";
@@ -16,7 +16,6 @@ import type { Region } from "./webserver.js";
 // or a single region) as many times as they like. Each Send saves to disk AND
 // is delivered to a waiting `receive_shot` MCP call so it lands in the chat.
 
-const WEBUI_DIR = fileURLToPath(new URL("../../../webui", import.meta.url));
 const MIME: Record<string, string> = {
   ".html": "text/html; charset=utf-8",
   ".js": "text/javascript; charset=utf-8",

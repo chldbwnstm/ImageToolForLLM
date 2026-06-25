@@ -97,9 +97,32 @@ Example sidecar:
 
 > `bbox` is `[x, y, width, height]` in pixels, origin top-left (`bboxFormat: "xywh"`).
 
-## Quick start (developer / early)
+## Install (one-click — no build needed)
 
-There's no one-command published install yet. From source:
+In Claude Code, add this repo as a plugin marketplace and install:
+
+```bash
+/plugin marketplace add chldbwnstm/ImageToolForLLM
+/plugin install imagetoolforllm@the-better-company-ai
+```
+
+Restart Claude Code and the `capture_and_annotate` tool + `/imagetoolforllm:image`
+command are ready. **No `npm install`, no build.** The MCP server ships as a single
+self-contained bundle (`server/dist/index.js`, deps inlined) with the native
+`node-screenshots` prebuilt binaries committed for every desktop platform:
+
+| OS | Window dropdown | Notes |
+|----|-----------------|-------|
+| **Windows** x64 | ✅ PrintWindow — captures occluded windows | works out of the box |
+| **macOS** arm64 / Intel x64 | ✅ CGWindowList | first capture: grant **Screen Recording** to your terminal (System Settings → Privacy & Security → Screen Recording), then relaunch it |
+| **Linux** x64 (glibc) | ✅ | best-effort — X11 works; Wayland capture may be limited |
+
+> Not pre-bundled: Windows arm64, Linux musl / arm64. On those the MCP server needs a
+> matching `node-screenshots` prebuilt before it can start.
+
+## From source (developers)
+
+To hack on it, clone and build (`npm run build` typechecks then re-bundles `server/dist/index.js`):
 
 ```bash
 git clone https://github.com/chldbwnstm/ImageToolForLLM.git
@@ -116,22 +139,9 @@ npm run smoke:annotate -w server  # headless test of the capture→annotate→sa
 npm run try           -w server
 ```
 
-### Install from the marketplace
+### From a local clone
 
-This repo doubles as a Claude Code plugin marketplace:
-
-```bash
-/plugin marketplace add chldbwnstm/ImageToolForLLM
-/plugin install imagetoolforllm@the-better-company-ai
-```
-
-> ⚠️ **Build step required (for now).** Claude Code does not run `npm install`/build on
-> plugin install, and the MCP server needs its dependencies (incl. the native
-> `node-screenshots`) + a built `server/dist`. After installing, run `npm install` and
-> `npm run build -w server` inside the installed plugin directory
-> (`~/.claude/plugins/...`). A self-contained, one-command install is on the roadmap.
-
-Or load it straight from a local clone (also needs the build above):
+You can also load it straight from a working copy:
 
 ```bash
 claude --plugin-dir /abs/path/to/ImageToolForLLM
@@ -178,9 +188,9 @@ The bundled `imagetool-format` skill teaches the agent to read the
 - [x] Reopen & edit a saved annotation
 - [x] Skill that teaches the agent to read the format
 - [x] Plugin manifest (skill + MCP server)
-- [ ] One-command published install
+- [x] One-click install — zero build, prebuilt native binaries committed (Win / macOS / Linux x64)
 - [ ] In-browser window-thumbnail picker
-- [ ] macOS / Linux (X11) support
+- [x] macOS / Linux (X11) support — window dropdown via bundled `node-screenshots`
 - [ ] Optional global-hotkey helper
 - [ ] Tool-agnostic export (Cursor / Copilot / any LLM)
 

@@ -2,12 +2,9 @@ import { spawn } from "node:child_process";
 import { readFile, unlink } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { SCRIPTS_DIR } from "../paths.js";
 
-// scripts/capture-desktop.ps1 lives under server/scripts — one level below the
-// repo's server/, same as src/ and dist/, so this relative path works for both
-// `tsx` (src) and the built output (dist).
-const SCRIPT = fileURLToPath(new URL("../../scripts/capture-desktop.ps1", import.meta.url));
+const SCRIPT = path.join(SCRIPTS_DIR, "capture-desktop.ps1");
 
 /**
  * Windows-only: capture the desktop, minimizing the annotator browser window

@@ -1,8 +1,22 @@
 # dependencies
+# Ignore node_modules everywhere (incl. any nested workspace node_modules)...
 node_modules/
+# ...but COMMIT the vendored node-screenshots native packages so the plugin runs
+# with zero `npm install` / build on Windows, macOS and Linux. (Claude Code does
+# not install or build plugin dependencies — the prebuilt binaries must ship.)
+!/node_modules/
+/node_modules/*
+!/node_modules/node-screenshots/
+!/node_modules/node-screenshots-win32-x64-msvc/
+!/node_modules/node-screenshots-darwin-arm64/
+!/node_modules/node-screenshots-darwin-x64/
+!/node_modules/node-screenshots-linux-x64-gnu/
 
 # build output
-dist/
+# Ignore everything under server/dist EXCEPT the committed, self-contained esbuild
+# bundle the plugin actually runs (deps inlined; node-screenshots stays external).
+server/dist/*
+!/server/dist/index.js
 *.tsbuildinfo
 
 # captured / annotated output (do not commit user screenshots)
