@@ -4,9 +4,11 @@
   "version": "0.1.0",
   "description": "Capture a screenshot, draw labeled regions on it, and hand the image + structured references to your LLM coding agent.",
   "author": {
-    "name": "ImageToolForLLM contributors"
+    "name": "Humblebee — THE BETTER COMPANY AI"
   },
   "license": "Apache-2.0",
+  "homepage": "https://github.com/chldbwnstm/ImageToolForLLM",
+  "repository": "https://github.com/chldbwnstm/ImageToolForLLM",
   "keywords": [
     "screenshot",
     "annotation",

@@ -7,6 +7,7 @@
  *
  * Output goes to ./shots (or $IMAGETOOLFORLLM_OUT).
  */
+import path from "node:path";
 import { captureMonitorLayers } from "../capture/screen.js";
 import { runAnnotationSession } from "../annotate/session.js";
 import { saveAnnotationResult } from "../export/saveResult.js";
@@ -27,20 +28,20 @@ async function main(): Promise<void> {
       source: "region",
       width: cap.width,
       height: cap.height,
+      defaultOutDir: config.outDir,
     },
     config.host,
   );
   if (!result) {
-    console.log("Cancelled or timed out — nothing saved.");
+    console.log("Cancelled — nothing saved.");
     return;
   }
 
-  const d = new Date();
-  const p = (n: number) => String(n).padStart(2, "0");
-  const name = `try-${d.getFullYear()}${p(d.getMonth() + 1)}${p(d.getDate())}-${p(d.getHours())}${p(d.getMinutes())}${p(d.getSeconds())}`;
+  const title = result.title || "try-untitled";
   const paths = await saveAnnotationResult({
-    outDir: config.outDir,
-    name,
+    outDir: result.outDir ? path.resolve(result.outDir) : config.outDir,
+    name: title,
+    title,
     originalPng: result.originalPng ?? undefined, // clean composite from the browser
     annotatedPng: result.annotatedPng,
     regions: result.regions,

@@ -6,6 +6,8 @@
 [![License: Apache-2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](./LICENSE)
 ![Status: early / work in progress](https://img.shields.io/badge/status-early%20%7C%20WIP-orange)
 
+**Created by Humblebee — THE BETTER COMPANY AI.**
+
 ---
 
 ## The problem
@@ -100,7 +102,7 @@ Example sidecar:
 There's no one-command published install yet. From source:
 
 ```bash
-git clone https://github.com/<you>/ImageToolForLLM.git
+git clone https://github.com/chldbwnstm/ImageToolForLLM.git
 cd ImageToolForLLM
 npm install
 npm run build -w server
@@ -127,7 +129,7 @@ claude --plugin-dir /abs/path/to/ImageToolForLLM
   "mcpServers": {
     "imagetoolforllm": {
       "command": "node",
-      "args": ["<abs-path>/ImageToolForLLM/server/dist/index.js"]
+      "args": ["/absolute/path/to/ImageToolForLLM/server/dist/index.js"]
     }
   }
 }

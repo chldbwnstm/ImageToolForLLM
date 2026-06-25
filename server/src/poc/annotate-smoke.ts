@@ -39,13 +39,35 @@ async function main(): Promise<void> {
   assert.equal(meta.layers.length, 1, "one layer in meta");
   console.log("GET / /annotator.* /layer/0.png /meta  OK");
 
+  // --- /save (Copy paths): save without ending the session ---
+  const tmp = await mkdtemp(path.join(tmpdir(), "itfl-save-"));
+  const saveResp = await fetch(base + "save", {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      title: "copytest",
+      outDir: tmp,
+      annotatedPng: "data:image/png;base64," + PNG.toString("base64"),
+      regions: [{ id: 1, label: "copy", note: "", bbox: [0, 0, 1, 1] }],
+      imageWidth: 1,
+      imageHeight: 1,
+    }),
+  }).then((r) => r.json());
+  assert.ok(saveResp.path && saveResp.path.endsWith("copytest.annotated.png"), "/save returns path");
+  await readFile(saveResp.path); // throws if the file wasn't written
+  await rm(tmp, { recursive: true, force: true });
+  console.log("POST /save  OK  ->", path.basename(saveResp.path));
+
   // --- simulate the browser submitting ---
   const regions = [{ id: 1, label: "Menu", note: "top-left", bbox: [0, 0, 1, 1], color: "#e53935" }];
   const submit = await fetch(base + "submit", {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({
+      title: "my test shot",
+      outDir: "C:/tmp/itfl-chosen",
       annotatedPng: "data:image/png;base64," + PNG.toString("base64"),
+      previewPng: "data:image/png;base64," + PNG.toString("base64"),
       originalPng: "data:image/png;base64," + PNG.toString("base64"),
       regions,
       imageWidth: 1,
@@ -56,8 +78,11 @@ async function main(): Promise<void> {
 
   const result = await server.result;
   assert.ok(result, "result resolved");
+  assert.equal(result.title, "my test shot", "title carried through");
+  assert.equal(result.outDir, "C:/tmp/itfl-chosen", "chosen outDir carried through");
   assert.equal(result.regions.length, 1);
   assert.ok(result.annotatedPng.length > 0, "annotated png decoded");
+  assert.ok(result.previewPng && result.previewPng.length > 0, "preview png decoded");
   assert.ok(result.originalPng && result.originalPng.length > 0, "clean original png decoded");
   server.close();
   console.log("POST /submit  OK  (regions:", result.regions.length + ")");

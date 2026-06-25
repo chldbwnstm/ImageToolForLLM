@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "description": "MCP server for ImageToolForLLM: native screen/window capture + local annotation handoff.",
+  "author": "Humblebee — THE BETTER COMPANY AI",
   "license": "Apache-2.0",
   "main": "dist/index.js",
   "bin": {
@@ -16,7 +17,8 @@
     "poc": "tsx src/poc/capture-poc.ts",
     "smoke": "tsx src/poc/mcp-smoke.ts",
     "smoke:annotate": "tsx src/poc/annotate-smoke.ts",
-    "try": "tsx src/poc/try-annotate.ts"
+    "try": "tsx src/poc/try-annotate.ts",
+    "serve": "tsx src/poc/serve.ts"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",

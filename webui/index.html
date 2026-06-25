@@ -8,28 +8,79 @@
 </head>
 <body>
   <header>
-    <span class="title">ImageToolForLLM</span>
-    <span class="hint">Drag to draw a region · Ctrl+wheel to zoom · scroll to pan · click a region to edit</span>
+    <span class="title" title="Created by Humblebee · THE BETTER COMPANY AI">ImageToolForLLM</span>
+    <span class="divider"></span>
+
+    <div class="capture-controls hidden" id="captureControls">
+      <span class="cap-label">Capture from</span>
+      <div class="source-wrap">
+        <button id="sourceBtn" class="source-picker" aria-haspopup="true" aria-expanded="false">
+          <span class="source-icon">🖥</span>
+          <span class="source-face">All monitors</span>
+          <span class="caret">▾</span>
+        </button>
+        <div id="sourceMenu" class="popover hidden" role="menu">
+          <div class="pop-head">Capture from
+            <button id="winRefresh" class="icon-btn" title="Refresh window list">↻</button>
+          </div>
+          <div class="pop-group-label">Screens</div>
+          <button class="pop-item" role="menuitemradio" data-kind="screen" data-mode="all">
+            <span class="dot"></span>🖥 All monitors
+          </button>
+          <button class="pop-item" role="menuitemradio" data-kind="screen" data-mode="primary">
+            <span class="dot"></span>🖥 Primary only
+          </button>
+          <div class="pop-group-label">Windows</div>
+          <div id="winItems"></div>
+          <label id="titleBarRow" class="pop-titlebar hidden">
+            <input type="checkbox" id="titleBarChk" /> Include title bar
+          </label>
+        </div>
+      </div>
+      <button id="captureBtn" class="btn">📷 Capture</button>
+      <button id="endBtn" class="btn ghost" title="End the capture session">End</button>
+    </div>
+
     <span class="spacer"></span>
-    <div class="zoom">
+
+    <span class="folder-field" title="Save folder — where files are saved">📁 <input id="folderInput" type="text" spellcheck="false" autocomplete="off" placeholder="(server default)" /></span>
+
+    <div class="zoom pill">
       <button id="zoomOut" class="btn ghost" title="Zoom out (Ctrl+-)">&minus;</button>
       <button id="zoomLevel" class="btn ghost" title="Reset to 100% (Ctrl+0)">100%</button>
       <button id="zoomIn" class="btn ghost" title="Zoom in (Ctrl+=)">+</button>
       <button id="zoomFit" class="btn ghost" title="Fit to window">Fit</button>
     </div>
-    <span class="spacer"></span>
-    <button id="cancelBtn" class="btn ghost">Cancel</button>
+
+    <span class="name-field" title="Name used for the saved files">
+      ⌗ <input id="titleInput" type="text" spellcheck="false" autocomplete="off" />
+    </span>
+    <button id="cancelBtn" class="btn ghost hidden">Cancel</button>
     <button id="sendBtn" class="btn primary">Send to LLM</button>
+    <button id="copyWholeBtn" class="btn red">COPY (WHOLE IMAGE)</button>
   </header>
 
   <main>
-    <div id="canvasWrap">
-      <canvas id="canvas"></canvas>
-    </div>
+    <div id="canvasWrap"><canvas id="canvas"></canvas></div>
+
     <aside id="sidebar">
-      <h2>Regions</h2>
+      <div class="region-head">
+        <h2>Regions <span id="regionCount">(0)</span></h2>
+        <label class="select-all"><input type="checkbox" id="selectAll" /> Select all</label>
+      </div>
       <ol id="regionList"></ol>
-      <p id="empty" class="muted">No regions yet — drag a box on the image.</p>
+      <p id="empty" class="muted">
+        Drag a box on the image to create your first region.<br />
+        Ctrl+wheel to zoom · scroll to pan · click a region to edit.
+      </p>
+
+      <div id="selectionBar" class="selection-bar hidden">
+        <span id="selCount">0 selected</span>
+        <button id="copyBtn" class="btn ghost">Save &amp; copy paths</button>
+        <button id="selClear" class="icon-btn" title="Clear selection">✕</button>
+      </div>
+
+      <div class="credit">Created by <b>Humblebee</b> · THE BETTER COMPANY AI</div>
     </aside>
   </main>
 

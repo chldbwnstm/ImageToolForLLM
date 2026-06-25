@@ -3,6 +3,7 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
+import { saveFromPayload } from "../export/saveResult.js";
 
 // webui/ lives at the repo root; this file is at server/{src,dist}/annotate/ — both
 // are exactly three levels below the repo root, so the relative path is identical
@@ -33,10 +34,19 @@ export interface AnnotationInput {
   height: number; // combined canvas height
   window?: { title: string; app: string };
   existingRegions?: Region[];
+  /** Pre-fill for the title field (else the browser uses today's date). */
+  defaultTitle?: string;
+  /** Pre-fill for the save-folder field (the current output directory). */
+  defaultOutDir?: string;
 }
 
 export interface SubmitResult {
+  title: string;
+  /** Folder the user chose in the browser, or null to use the server default. */
+  outDir: string | null;
   annotatedPng: Buffer;
+  /** Downscaled annotated PNG for inlining into the LLM context; null if absent. */
+  previewPng: Buffer | null;
   /** Clean composite (no boxes) for reopen/edit; null if the browser didn't send one. */
   originalPng: Buffer | null;
   regions: Region[];
@@ -120,11 +130,15 @@ async function handle(
     res.writeHead(200, { "content-type": "application/json" });
     res.end(
       JSON.stringify({
+        mode: "oneshot",
+        multi: false,
         source: input.source,
         width: input.width,
         height: input.height,
         window: input.window ?? null,
         regions: input.existingRegions ?? [],
+        defaultTitle: input.defaultTitle ?? null,
+        defaultOutDir: input.defaultOutDir ?? null,
         layers: input.layers.map((l, i) => ({
           src: `/layer/${i}.png`,
           x: l.x,
@@ -143,13 +157,31 @@ async function handle(
     const annotatedPng = Buffer.from(strip(data.annotatedPng), "base64");
     const ob64 = strip(data.originalPng);
     const originalPng = ob64 ? Buffer.from(ob64, "base64") : null;
+    const pb64 = strip(data.previewPng);
+    const previewPng = pb64 ? Buffer.from(pb64, "base64") : null;
     res.writeHead(200, { "content-type": "application/json" });
     res.end(JSON.stringify({ ok: true }));
     resolveResult({
+      title: String(data.title ?? "").trim(),
+      outDir: String(data.outDir ?? "").trim() || null,
       annotatedPng,
+      previewPng,
       originalPng,
       regions: Array.isArray(data.regions) ? data.regions : [],
     });
+    return;
+  }
+  if (req.method === "POST" && p === "/save") {
+    const data = JSON.parse(await readBody(req));
+    const { paths } = await saveFromPayload(data, {
+      defaultOutDir: input.defaultOutDir ?? process.cwd(),
+      source: input.source,
+      window: input.window,
+      fallbackWidth: input.width,
+      fallbackHeight: input.height,
+    });
+    res.writeHead(200, { "content-type": "application/json" });
+    res.end(JSON.stringify({ path: paths.annotated }));
     return;
   }
   if (req.method === "POST" && p === "/cancel") {

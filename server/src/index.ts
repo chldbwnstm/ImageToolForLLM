@@ -29,6 +29,7 @@ import {
 import { listWindows, captureWindowById, captureWindowImage } from "./capture/window.js";
 import type { AnnotationInput } from "./annotate/webserver.js";
 import { runAnnotationSession } from "./annotate/session.js";
+import { ensureSession, nextShot } from "./annotate/sessionServer.js";
 import { saveAnnotationResult } from "./export/saveResult.js";
 
 const config = loadConfig();
@@ -43,6 +44,38 @@ function timestampName(prefix: string): string {
 async function ensureOutDir(): Promise<string> {
   await mkdir(config.outDir, { recursive: true });
   return config.outDir;
+}
+
+type ToolContent =
+  | { type: "text"; text: string }
+  | { type: "image"; data: string; mimeType: string };
+
+/**
+ * Build the tool result: the annotated preview as an inline IMAGE block (so it
+ * lands directly in the agent's context — the "paste into Claude" behavior),
+ * plus a text block with the [ITFL: <title>] tag, saved paths, and region legend.
+ */
+function annotationToolResult(
+  title: string,
+  captureDesc: string,
+  paths: { annotated: string; sidecar: string },
+  result: { regions: Array<{ id: number; label: string; note: string }>; previewPng: Buffer | null },
+): { content: ToolContent[] } {
+  const legend =
+    result.regions.map((r) => `  [${r.id}] ${r.label}${r.note ? " — " + r.note : ""}`).join("\n") ||
+    "  (no regions)";
+  const text =
+    `[ITFL: ${title}]  ${captureDesc}\n` +
+    `Saved:\n  ${paths.annotated}\n  ${paths.sidecar}\n\nRegions:\n${legend}` +
+    (result.previewPng
+      ? "\n\n(The image above is a downscaled preview; full resolution is at the saved path.)"
+      : "");
+  const content: ToolContent[] = [];
+  if (result.previewPng) {
+    content.push({ type: "image", data: result.previewPng.toString("base64"), mimeType: "image/png" });
+  }
+  content.push({ type: "text", text });
+  return { content };
 }
 
 const server = new McpServer({
@@ -175,16 +208,17 @@ server.registerTool(
       };
     }
 
+    input.defaultTitle = name?.trim() || undefined;
+    input.defaultOutDir = config.outDir;
     const result = await runAnnotationSession(input, config.host);
     if (!result) {
-      return {
-        content: [{ type: "text", text: "Annotation cancelled or timed out — nothing saved." }],
-      };
+      return { content: [{ type: "text", text: "Annotation cancelled — nothing saved." }] };
     }
-    const base = name?.trim() ? name.trim() : timestampName("shot");
+    const title = result.title || name?.trim() || "";
     const paths = await saveAnnotationResult({
-      outDir: config.outDir,
-      name: base,
+      outDir: result.outDir ? path.resolve(result.outDir) : config.outDir,
+      name: title,
+      title,
       originalPng: result.originalPng ?? undefined,
       annotatedPng: result.annotatedPng,
       regions: result.regions,
@@ -193,17 +227,7 @@ server.registerTool(
       height,
       window: windowMeta,
     });
-    const legend =
-      result.regions.map((r) => `  [${r.id}] ${r.label}${r.note ? " — " + r.note : ""}`).join("\n") ||
-      "  (no regions drawn)";
-    return {
-      content: [
-        {
-          type: "text",
-          text: `Captured ${captureDesc}, ${width}x${height}.\nSaved:\n  ${paths.annotated}\n  ${paths.sidecar}\n\nRegions:\n${legend}`,
-        },
-      ],
-    };
+    return annotationToolResult(title, `${captureDesc}, ${width}x${height}`, paths, result);
   },
 );
 
@@ -248,7 +272,8 @@ server.registerTool(
         ],
       };
     }
-    const originalPng = await readFile(path.join(dir, originalName));
+    // basename() so a crafted sidecar can't point image.original outside `dir`
+    const originalPng = await readFile(path.join(dir, path.basename(originalName)));
     const windowMeta = sidecar.window ?? undefined;
     const input: AnnotationInput = {
       layers: [{ png: originalPng, x: 0, y: 0, width, height }],
@@ -257,15 +282,19 @@ server.registerTool(
       height,
       window: windowMeta,
       existingRegions: Array.isArray(sidecar.regions) ? sidecar.regions : [],
+      defaultTitle: sidecar.title ?? base,
+      defaultOutDir: dir,
     };
 
     const result = await runAnnotationSession(input, config.host);
     if (!result) {
       return { content: [{ type: "text", text: "Reopen cancelled — no changes saved." }] };
     }
+    const title = result.title || sidecar.title || base;
     const paths = await saveAnnotationResult({
-      outDir: dir,
-      name: base,
+      outDir: result.outDir ? path.resolve(result.outDir) : dir,
+      name: title,
+      title,
       originalPng: result.originalPng ?? originalPng,
       annotatedPng: result.annotatedPng,
       regions: result.regions,
@@ -274,17 +303,30 @@ server.registerTool(
       height,
       window: windowMeta,
     });
-    const legend =
-      result.regions.map((r) => `  [${r.id}] ${r.label}${r.note ? " — " + r.note : ""}`).join("\n") ||
-      "  (no regions)";
-    return {
-      content: [
-        {
-          type: "text",
-          text: `Reopened & saved:\n  ${paths.annotated}\n  ${paths.sidecar}\n\nRegions:\n${legend}`,
-        },
-      ],
-    };
+    return annotationToolResult(title, `reopened (${width}x${height})`, paths, result);
+  },
+);
+
+server.registerTool(
+  "receive_shot",
+  {
+    title: "Receive next captured shot",
+    description:
+      "Open (if not already) the persistent capture browser and BLOCK until the user sends the next shot with a Send-to-LLM button — the whole annotated image, or a single cropped region. Returns that image inline (so it appears in the chat) plus saved paths and the region legend. Call it again after handling each shot to keep receiving; it returns a 'session ended' note when the user clicks End. Use this for the 'keep the browser open and send many screenshots' workflow.",
+    inputSchema: {},
+  },
+  async () => {
+    await ensureSession(config.host, config.outDir);
+    const shot = await nextShot();
+    if (!shot) {
+      return { content: [{ type: "text", text: "Capture session ended — no more shots." }] };
+    }
+    return annotationToolResult(
+      shot.title,
+      `${shot.source} (${shot.width}x${shot.height})`,
+      shot.paths,
+      { regions: shot.regions, previewPng: shot.previewPng },
+    );
   },
 );
 
