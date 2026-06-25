@@ -10,6 +10,30 @@
 
 ---
 
+## ⚡ Quick install
+
+In Claude Code:
+
+```bash
+/plugin marketplace add chldbwnstm/imagetoolforllm
+/plugin install imagetoolforllm@chldbwnstm-imagetoolforllm
+```
+
+No `npm install`, no build — prebuilt for Windows, macOS and Linux.
+
+Restart Claude Code, then run **`/imagetoolforllm:image`**. A browser annotator opens, where you can:
+
+- **Capture your screen** — a whole monitor, all monitors at once, or a specific window (pick the source from the dropdown). Re-capture as many times as you like.
+- **Draw labeled regions** — drag boxes onto the shot and give each one a number + label + note.
+- **Zoom & pan** — Ctrl + scroll to zoom, drag to pan (handy for large or multi-monitor shots).
+- **Name it & choose a save folder** for the exported files.
+- **Send to LLM** — push the annotated image (or just a single region) straight into your Claude Code chat; the agent describes each shot as it arrives.
+- **Copy (whole image)** — save and copy the file paths instead of sending.
+
+Platform details and troubleshooting are further down.
+
+---
+
 ## The problem
 
 Getting a screenshot into an LLM coding agent (Claude Code, Cursor, Copilot, …)
