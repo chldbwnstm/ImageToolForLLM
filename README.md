@@ -102,8 +102,8 @@ Example sidecar:
 In Claude Code, add this repo as a plugin marketplace and install:
 
 ```bash
-/plugin marketplace add chldbwnstm/ImageToolForLLM
-/plugin install imagetoolforllm@the-better-company-ai
+/plugin marketplace add chldbwnstm/imagetoolforllm
+/plugin install imagetoolforllm@chldbwnstm-imagetoolforllm
 ```
 
 Restart Claude Code and the `capture_and_annotate` tool + `/imagetoolforllm:image`
@@ -120,6 +120,22 @@ self-contained bundle (`server/dist/index.js`, deps inlined) with the native
 > Not pre-bundled: Windows arm64, Linux musl / arm64. On those the MCP server needs a
 > matching `node-screenshots` prebuilt before it can start.
 
+<details>
+<summary><b>Windows: "Failed to finalize marketplace cache / EBUSY: resource busy or locked"</b></summary>
+
+This is a transient Windows file-lock (usually Microsoft Defender scanning the freshly
+cloned native binaries during the cache step). Fix it by clearing the cache and retrying:
+
+```powershell
+Remove-Item -Recurse -Force "$env:USERPROFILE\.claude\plugins\marketplaces\chldbwnstm-imagetoolforllm" -ErrorAction SilentlyContinue
+Remove-Item -Recurse -Force "$env:USERPROFILE\.claude\plugins\marketplaces\chldbwnstm-ImageToolForLLM" -ErrorAction SilentlyContinue
+```
+
+Then re-run the two `/plugin` commands. If it persists, close any other Claude Code
+instances and add a Defender exclusion (Admin PowerShell):
+`Add-MpPreference -ExclusionPath "$env:USERPROFILE\.claude"`, then retry.
+
+</details>
 
 ### From a local clone
 
