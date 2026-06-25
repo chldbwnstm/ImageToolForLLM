@@ -35,3 +35,7 @@ Thumbs.db
 # temp
 .tmp/
 scratchpad/
+
+# local-only project notes (kept out of the public repo)
+/CLAUDE.md
+/program_structure.txt
