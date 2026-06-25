@@ -28,7 +28,7 @@ Restart Claude Code, then run **`/imagetoolforllm:image`**. A browser annotator 
 - **Zoom & pan** — Ctrl + scroll to zoom, drag to pan (handy for large or multi-monitor shots).
 - **Name it & choose a save folder** for the exported files.
 - **Send to LLM** — push the annotated image (or just a single region) straight into your Claude Code chat; the agent describes each shot as it arrives.
-- **Copy (whole image)** — save and copy the file paths instead of sending.
+- **Copy paths** — save and copy file paths instead of sending: the whole image, or just the region(s) you select (copy one or many at a time).
 
 Platform details and troubleshooting are further down.
 
