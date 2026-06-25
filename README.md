@@ -116,7 +116,22 @@ npm run smoke:annotate -w server  # headless test of the capture→annotate→sa
 npm run try           -w server
 ```
 
-Use it as a **Claude Code plugin** (loads the MCP server + skill together):
+### Install from the marketplace
+
+This repo doubles as a Claude Code plugin marketplace:
+
+```bash
+/plugin marketplace add chldbwnstm/ImageToolForLLM
+/plugin install imagetoolforllm@the-better-company-ai
+```
+
+> ⚠️ **Build step required (for now).** Claude Code does not run `npm install`/build on
+> plugin install, and the MCP server needs its dependencies (incl. the native
+> `node-screenshots`) + a built `server/dist`. After installing, run `npm install` and
+> `npm run build -w server` inside the installed plugin directory
+> (`~/.claude/plugins/...`). A self-contained, one-command install is on the roadmap.
+
+Or load it straight from a local clone (also needs the build above):
 
 ```bash
 claude --plugin-dir /abs/path/to/ImageToolForLLM

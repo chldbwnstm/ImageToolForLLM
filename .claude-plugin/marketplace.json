@@ -1,0 +1,18 @@
+{
+  "name": "the-better-company-ai",
+  "description": "Plugins by Humblebee — THE BETTER COMPANY AI.",
+  "owner": {
+    "name": "Humblebee — THE BETTER COMPANY AI"
+  },
+  "plugins": [
+    {
+      "name": "imagetoolforllm",
+      "source": "./",
+      "description": "Capture a screenshot, draw labeled regions on it, and hand the image + structured references to your LLM coding agent.",
+      "category": "development",
+      "homepage": "https://github.com/chldbwnstm/ImageToolForLLM",
+      "repository": "https://github.com/chldbwnstm/ImageToolForLLM",
+      "license": "Apache-2.0"
+    }
+  ]
+}
