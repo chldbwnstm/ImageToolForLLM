@@ -120,24 +120,6 @@ self-contained bundle (`server/dist/index.js`, deps inlined) with the native
 > Not pre-bundled: Windows arm64, Linux musl / arm64. On those the MCP server needs a
 > matching `node-screenshots` prebuilt before it can start.
 
-## From source (developers)
-
-To hack on it, clone and build (`npm run build` typechecks then re-bundles `server/dist/index.js`):
-
-```bash
-git clone https://github.com/chldbwnstm/ImageToolForLLM.git
-cd ImageToolForLLM
-npm install
-npm run build -w server
-
-# sanity checks
-npm run poc           -w server   # captures your primary monitor + a window to ./shots
-npm run smoke         -w server   # spins up the MCP server and lists/calls tools
-npm run smoke:annotate -w server  # headless test of the capture→annotate→save cycle
-
-# manual end-to-end: captures your screen(s), opens the browser annotator
-npm run try           -w server
-```
 
 ### From a local clone
 
@@ -232,15 +214,6 @@ core.**
 ## License
 
 Apache License 2.0 — see [`LICENSE`](./LICENSE).
-
-## Acknowledgements / prior art
-
-Earlier tools that tackle the capture→paste side of this workflow (worth a look
-if labeled region references aren't what you need):
-
-- [Invoke](https://getinvoke.dev) — screenshot-to-path for terminals
-- `ruslanlap/WSL-Screenshot-Paster-for-Claude-Code`
-- `BensonLaur/claude-image-paste`
 
 ImageToolForLLM differs by adding the **labeled-region reference layer** on top
 of the capture.
