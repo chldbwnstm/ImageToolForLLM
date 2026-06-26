@@ -19,8 +19,6 @@ In Claude Code:
 /plugin install imagetoolforllm@chldbwnstm-imagetoolforllm
 ```
 
-No `npm install`, no build — prebuilt for Windows, macOS and Linux.
-
 Restart Claude Code, then run **`/imagetoolforllm:image`**. A browser annotator opens, where you can:
 
 - **Capture your screen** — a whole monitor, all monitors at once, or a specific window (pick the source from the dropdown). Re-capture as many times as you like.
