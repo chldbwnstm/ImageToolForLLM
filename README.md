@@ -1,5 +1,7 @@
 # ImageToolForLLM
 
+**English** · [한국어](README.ko.md)
+
 > Capture a screenshot, label regions on it, and hand the image + structured
 > references to your LLM coding agent.
 
